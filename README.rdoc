@@ -4,8 +4,8 @@ Hyperion is a lightning fast Ruby object model backed with Redis. It was created
 
 == Key features
 
-CRUD on Ruby classes, any attributes get stuffed into a Redis key.
-Indexing of objects on any attributes or collections of attributes.
+* CRUD on Ruby classes, any attributes get stuffed into a Redis key.
+* Indexing of objects on any attributes or collections of attributes.
 
 == A quickie example
 	
@@ -36,18 +36,19 @@ Indexing of objects on any attributes or collections of attributes.
 
 == Requirements
 
-Ruby 1.9
+* Ruby 1.9
+* Redis
 
 == Roadmap
 
-Change the indexes to use ZSETs.
-Delete. (ha!)
-Schema versioning. 
-Faster faster faster! Let's utilize more of Redis' exposed data structures to make it better.
-Clever auto-sharding based on primary keyspace
- - Figure out a way to auto-balance shards
-Slow full-table searches.
-Partial index searches
+* Change the indexes to use ZSETs.
+* Delete. (ha!)
+* Schema versioning and migrations.
+* Faster faster faster! Let's utilize more of Redis' exposed data structures to make it better.
+* Clever auto-sharding based on primary keyspace
+  * Figure out a way to auto-balance shards
+* Slow full-table searches.
+* Partial index searches
 
 == Note on Patches/Pull Requests
  
