@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "benchmarks.rb",
+     "hyperion.gemspec",
      "lib/hyperion.rb",
      "lib/hyperion/base.rb",
      "lib/hyperion/finders.rb",
