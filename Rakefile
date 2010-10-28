@@ -24,7 +24,6 @@ begin
     gem.email = "adrian.pike@gmail.com"
     gem.homepage = "http://github.com/adrianpike/hyperion"
     gem.authors = ["adrianpike"]
-    gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
   end
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
@@ -45,13 +44,13 @@ end
 
 
 if defined?(Spec)
-  desc 'Test the formtastic plugin.'
+  desc 'Test hyperion.'
   Spec::Rake::SpecTask.new('spec') do |t|
     t.spec_files = FileList['spec/**/*_spec.rb']
     t.spec_opts = ["-c"]
   end
 
-  desc 'Test the formtastic plugin with specdoc formatting and colors'
+  desc 'Test hyperion with specdoc formatting and colors'
   Spec::Rake::SpecTask.new('specdoc') do |t|
     t.spec_files = FileList['spec/**/*_spec.rb']
     t.spec_opts = ["--format specdoc", "-c"]
@@ -66,12 +65,12 @@ if defined?(Spec)
 end
 
 if defined?(RSpec)
-  desc 'Test the formtastic plugin.'
+  desc 'Test hyperion.'
   RSpec::Core::RakeTask.new('spec') do |t|
     t.pattern = FileList['spec/**/*_spec.rb']
   end
 
-  desc 'Test the formtastic plugin with specdoc formatting and colors'
+  desc 'Test hyperion with specdoc formatting and colors'
   RSpec::Core::RakeTask.new('specdoc') do |t|
     t.pattern = FileList['spec/**/*_spec.rb']
   end

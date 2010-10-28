@@ -7,7 +7,9 @@ Hyperion is a lightning fast Ruby object model backed with Redis. It was created
 * CRUD on Ruby classes, any attributes get stuffed into a Redis key.
 * Indexing of objects on any attributes or collections of attributes.
 
-== A quickie example
+== A quickie
+	
+	adrian$ gem install hyperion
 	
 	require 'hyperion'
 	
@@ -37,6 +39,7 @@ Hyperion is a lightning fast Ruby object model backed with Redis. It was created
 == Requirements
 
 * Ruby 1.9
+* activesupport
 * Redis
 
 == Roadmap
@@ -57,8 +60,7 @@ Hyperion is a lightning fast Ruby object model backed with Redis. It was created
 * Add tests for it. This is important so I don't break it in a
   future version unintentionally.
 * Commit, do not mess with rakefile, version, or history.
-  (if you want to have your own version, that is fine but
-   bump version in a commit by itself I can ignore when I pull)
+  (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
 * Send me a pull request. Bonus points for topic branches.
 
 == Copyright
