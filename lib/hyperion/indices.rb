@@ -16,6 +16,7 @@ class Hyperion
 		end
 		
 		# Indexes need to be sorted sets!
+		# ZSET scores can supposedly be large floats, should explore max ZSET score size.
 		
 	end
 end

@@ -125,7 +125,7 @@ class Hyperion
   end
   
 
-  # THIS SHIT IS MAD DANGEROUS, BEWARE DATA INTEGRITY
+  # THIS IS MAD DANGEROUS AND UNTESTED, BEWARE DATA INTEGRITY
   def self.load(file = STDIN, truncate = true, lock = false)
     # TODO: lockability and progress    
     
@@ -148,7 +148,7 @@ class Hyperion
     
   end
   
-  # THIS SHIT IS MAD DANGEROUS, BEWARE DATA INTEGRITY
+  # THIS IS TOTALLY IRREVERSIBLE YO
   def self.truncate!
     redis.flushdb
   end
