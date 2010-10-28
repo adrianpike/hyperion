@@ -1,6 +1,49 @@
 = hyperion
 
-Description goes here.
+Hyperion is a lightning fast Ruby object model backed with Redis. It was created in 48 hours to back Leatherbound.me, a ebook comparison shopping tool that was built for Rails Rumble. We withstood 15,000 uniques on Monday morning, and Hyperion stayed super quick even with tons of concurrent queries on a small Linode.
+
+== Key features
+
+CRUD on Ruby classes, any attributes get stuffed into a Redis key.
+Indexing of objects on any attributes or collections of attributes.
+
+== A quickie example
+	
+	require 'hyperion'
+	
+	class Person < Hyperion
+		# First we set up the attributes on this object.
+		attr_accessor :name, :email, :password, :other_amazing_info, :car_color, :state
+		
+		# Let's use the email as our primary key.
+		# Another option would be to not define our own, in which case :id will be created & used.
+		hyperion_key :email
+		
+		# Lets add some indexes!
+		# We can search for all Persons with a given name.
+		hyperion_index :name
+		
+		# We can also search for all people with a given car color and state.
+		hyperion_index [:car_color, :state]
+	end
+
+	p1 = Person.new({:name => 'Adrian Pike', :email => 'adrian@pikeapps.com', …})
+	p1.save
+	
+	Person.find('adrian@pikeapps.com') #=> #<Person @name="Adrian Pike", @email="adrian@pikeapps.com">
+	Person.find(:name => 'Adrian Pike') #=> [#<Person @name="Adrian Pike", @email="adrian@pikeapps.com">]
+	Person.find(:car_color => 'purple', :state => 'denial') #=> [#<Person @name="Adrian Pike", @email="adrian@pikeapps.com">]
+
+== Requirements
+
+Ruby 1.9
+
+== Roadmap
+
+Faster faster faster! Let's utilize more of Redis' exposed data structures to make it better.
+Clever auto-sharding based on keyspace
+Slow full-table searches.
+Partial index searches
 
 == Note on Patches/Pull Requests
  
@@ -15,4 +58,4 @@ Description goes here.
 
 == Copyright
 
-Copyright (c) 2010 adrianpike. See LICENSE for details.
+Copyright (c) 2010 Adrian Pike. See LICENSE for details.
