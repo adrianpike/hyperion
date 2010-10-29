@@ -46,6 +46,7 @@ Hyperion is a lightning fast Ruby object model backed with Redis. It was created
 
 * Change the indexes to use ZSETs.
 * Delete. (ha!)
+* Event hooks
 * Schema versioning and migrations.
 * Faster faster faster! Let's utilize more of Redis' exposed data structures to make it better.
 * Clever auto-sharding based on primary keyspace
