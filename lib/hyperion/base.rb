@@ -8,7 +8,18 @@ class Hyperion
   end
   
   def self.redis
-    @@redis ||= Redis.new
+    unless class_variable_defined?('@@redis') then
+			@@redis = Redis.new
+			
+			old_version = @@redis['hyperion_version']
+			if old_version then
+				Hyperion.logger.error("Hyperion datastore version is INCOMPATIBLE with your current hyperion gem.") unless version_compatible?(old_version)
+			else
+				@@redis['hyperion_version'] = version
+			end
+			
+		end
+		@@redis
   end
 
   def save
