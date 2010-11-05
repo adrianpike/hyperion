@@ -20,16 +20,12 @@ describe 'Hyperions finders' do
 		f5 = DefaultKey.find2(:first, :conditions => {:key => {:min => 'a', :max => 'z'}}, :limit => 10, :order => content)
 	end
 
-	it 'should be able to find all items exact matching an index' do
-	end
+	it 'should be able to find all items exact matching an index'
 
-	it 'should be able to find all items range matching an index' do
-	end
+	it 'should be able to find all items range matching an index'
 
-	it 'should be able to find all items exact matching multiple indexes' do
-	end
+	it 'should be able to find all items exact matching multiple indexes'
 
-	it 'should be able to find all items range matching multiple indexes' do
-	end
+	it 'should be able to find all items range matching multiple indexes'
 	
 end
