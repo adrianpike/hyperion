@@ -36,9 +36,9 @@ describe 'Hyperions indices' do
     }.should_not raise_error(Hyperion::Indices::UnindexableValue)
   end
   
-  it 'should score an object that provides a zset_score_string method' do
+  it 'should score an object that provides a zset_score method' do
     class IndexableObjectByString < Array
-      def zset_score_string
+      def zset_score
         self.join
       end
     end
@@ -47,6 +47,8 @@ describe 'Hyperions indices' do
     a << 'aaa'; a << 'bbb'
     b = IndexableObjectByString.new
     b << 'aaa'; b << 'ccc'
+    
+    Hyperion.score(a).should be_kind_of(Numeric)
     expect {
       Hyperion.score(a).should < Hyperion.score(b)
     }.should_not raise_error(Hyperion::Indices::UnindexableValue)

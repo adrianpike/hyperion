@@ -39,18 +39,16 @@ class Hyperion
 		
 			def score(value)
 				case value
-					when Float,Fixnum,Bignum
-						value
-					when String
-						string_value(value)
+				when Float,Fixnum,Bignum
+					value
+				when String
+					string_value(value)
+				else
+					if value.respond_to? :zset_score then
+						score value.zset_score # recurse. TODO: prevent infinite recursion in case someone returns self or something
 					else
-					  if value.respond_to? :zset_score then
-					    value.zset_score
-				    elsif value.respond_to? :zset_score_string then
-				      string_value(value.zset_score_string)
-				    else
-  						raise UnindexableValue
-						end
+						raise UnindexableValue
+					end
 				end
 			end
 		
