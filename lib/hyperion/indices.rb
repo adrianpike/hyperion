@@ -44,7 +44,11 @@ class Hyperion
 					when String
 						string_value(value)
 					else
-						raise UnindexableValue
+					  if value.respond_to? :zset_score then
+					    value.zset_score
+				    else
+  						raise UnindexableValue
+						end
 				end
 			end
 		

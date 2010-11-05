@@ -21,16 +21,32 @@ describe 'Hyperions indices' do
   end
 
   it 'should score an object that provides a zset_score method' do
-    class IndexableObject < Array
+    class IndexableObjectByScore < Array
       def zset_score
         self.count
       end
     end
     
-    a = IndexableObject.new
+    a = IndexableObjectByScore.new
     a << 'foo'; a << 'bar'
-    b = IndexableObject.new
+    b = IndexableObjectByScore.new
     b << 'foo'; b << 'bar'; b << 'baz'
+    expect {
+      Hyperion.score(a).should < Hyperion.score(b)
+    }.should_not raise_error(Hyperion::Indices::UnindexableValue)
+  end
+  
+  it 'should score an object that provides a zset_score_string method' do
+    class IndexableObjectByString < Array
+      def zset_score_string
+        self.join
+      end
+    end
+        
+    a = IndexableObjectByString.new
+    a << 'aaa'; a << 'bbb'
+    b = IndexableObjectByString.new
+    b << 'aaa'; b << 'ccc'
     expect {
       Hyperion.score(a).should < Hyperion.score(b)
     }.should_not raise_error(Hyperion::Indices::UnindexableValue)
