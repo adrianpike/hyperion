@@ -93,10 +93,13 @@ describe 'Hyperion' do
 	it "should not have concurrency issues" do
 	end
 
-	it "should be able to reindex objects" do
+	it "should reindex objects when I update them" do
+	  
+	  
+	  
 	end
 
-	it "should update indexes" do
+	it "should delete objects and their indexes when i delete them" do
 	end
 	
 	it 'should be OK with key collision' do

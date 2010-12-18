@@ -3,13 +3,47 @@ class Hyperion
 		
 		class NoIndex < HyperionException; end
 	  class UnindexableValue < HyperionException; end
-		
-		def reindex!
-			# Now lets update any indexes
-	    # BUG: need to clear out any old indexes of us
+	  
+	  # This is so if values get changed, we know the original values so we can go into the indexes and sweep up.
+	  def remember_initial_values
+	    Hyperion.logger.debug("[Hyperion] Remembering initial values on #{self.to_s}!")
+	    @initial_values = self.class.class_variable_get('@@redis_indexes').flatten.uniq.collect{|idx|
+        self.send(idx)
+      } if self.class.class_variable_defined?('@@redis_indexes')
+    end
+	  
+	  def index_values_changed?(idx)
+	    return false unless @initial_values
+	    if idx.is_a?(Array) then
+	      idx.each {|i|
+	        (return true) if (@initial_values[i] != self.send(i))
+	      }
+      else
+        (return true) if (@initial_values[idx] != self.send(idx))
+      end
+    end
+	  
+		def reindex!(*opts)
+		  # Now lets update any indexes
+			
 	    self.class.class_variable_get('@@redis_indexes').each{|idx|
 	      Hyperion.logger.debug("[RS] Updating index for #{idx}") if Hyperion::DEBUG
 
+	      
+	      if index_values_changed?(idx) then
+	        p "COLUMNS CHANGED YO SHITS"
+	      #          if idx.is_a?(Array) then
+	      #            index_values = idx.sort.collect {|i| self.send(i) }.join('.')
+	      #            index_key = self.class.to_s.downcase + '_' + idx.sort.join('.').to_s + '_' + index_values
+	      #          else
+	      #            value = self.send(idx)
+	      #            index_key = self.class.to_s.downcase + '_' + idx.to_s + '_' + value.to_s if value
+	      #          end
+	      #          
+	      #          Rails.logger.debug("[RS] Removing index #{index_key}: #{self.send(self.class.class_variable_get('@@redis_key'))}") if RedisStore::DEBUG
+	      #           RedisStore.redis.srem(index_key, self.send(self.class.class_variable_get('@@redis_key')))
+	      end
+	      
 	      if idx.is_a?(Array) then
 	        index_values = idx.sort.collect {|i| self.send(i) }.join('.')
 	        index_key = self.class.to_s.downcase + '_' + idx.sort.join('.').to_s + '_' + index_values
@@ -17,7 +51,8 @@ class Hyperion
 					value = self.send(idx)
 	        index_key = self.class.to_s.downcase + '_' + idx.to_s + '_' + value.to_s if value
 	      end
-	     Hyperion.logger.debug("[RS] Saving index #{index_key}: #{self.send(self.class.class_variable_get('@@redis_key'))}") if Hyperion::DEBUG
+	      Hyperion.logger.debug("[RS] Saving index #{index_key}: #{self.send(self.class.class_variable_get('@@redis_key'))}") if Hyperion::DEBUG
+	      
 	      Hyperion.redis.sadd(index_key, self.send(self.class.class_variable_get('@@redis_key')))
 	    } if self.class.class_variable_defined?('@@redis_indexes')
 		end
@@ -35,7 +70,7 @@ class Hyperion
 		  end
 		
 			# Indexes need to be sorted sets!
-			# ZSET scores can supposedly be large floats, should explore max ZSET score size.
+			# ZSET scores can supposedly be large floats - I need to explore max ZSET score size.
 		
 			def score(value)
 				case value
@@ -45,7 +80,7 @@ class Hyperion
 					string_value(value)
 				else
 					if value.respond_to? :zset_score then
-						score value.zset_score # recurse. TODO: prevent infinite recursion in case someone returns self or something
+						score value.zset_score # recurse. TODO: limit recursion in case someone returns self or something
 					else
 						raise UnindexableValue
 					end

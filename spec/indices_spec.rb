@@ -19,7 +19,7 @@ describe 'Hyperions indices' do
   it 'should raise errors if i try to score things that make no sense' do
     lambda { Hyperion.score(['foo','bar'])}.should raise_error(Hyperion::Indices::UnindexableValue)
   end
-
+  
   it 'should score an object that provides a zset_score method' do
     class IndexableObjectByScore < Array
       def zset_score

@@ -1,48 +1,89 @@
 class Hyperion
 	
+	DEFAULTS = {
+	  :host => '127.0.0.1',
+	  :port => '6379'
+	}
+	
   class HyperionException < Exception; end
   class NoKey < HyperionException; end
 	
-  def self.hyperion_defaults(defaults)
-    class_variable_set(:@@redis_defaults, defaults)
+  def self.hyperion_defaults(defaults) # DEPRECATED
+    attribute_defaults(defaults)
+  end
+  def self.attribute_defaults(defaults)
+    class_variable_set(:@@attr_defaults, defaults)
+  end
+  
+  # TODO: It would be nice to refactor this
+  def self.config(attrib)
+    DEFAULTS[attrib]
   end
   
   def self.redis
     unless class_variable_defined?('@@redis') then
-			@@redis = Redis.new
+			begin
+			  @@redis = Redis.new(:host => config(:host), :port => config(:port))
 			
-			old_version = @@redis['hyperion_version']
-			if old_version then
-				Hyperion.logger.error("Hyperion datastore version is INCOMPATIBLE with your current hyperion gem.") unless version_compatible?(old_version)
-			else
-				@@redis['hyperion_version'] = version
+  			old_version = @@redis['hyperion_version']
+  			if old_version then
+  				Hyperion.logger.error("Hyperion datastore version is INCOMPATIBLE with your current hyperion gem. We'll still continue, but beware...") unless version_compatible?(old_version)
+  			else
+  				@@redis['hyperion_version'] = version
+  			end
+			rescue Errno::ECONNREFUSED => e
+			  Hyperion.logger.error("Hyperion wasn't able to connect to your Redis server on #{config(:host)}:#{config(:port)}.")
+        raise e
 			end
-			
 		end
 		@@redis
   end
 
+  # :[ DEPRECATED, getting yanked as soon as possible
+  def self.attr_accessor(*args)
+    attribute(*args)
+  end
+  
+  def self.attribute(*args)
+    args.each{|attr|
+      Hyperion.logger.debug("[Hyperion] Initializing attribute #{attr} on #{self.to_s}")
+      module_eval( "def #{attr}() @#{attr}; end" )
+      module_eval( "def #{attr}=(val) @#{attr} = val; end" )
+    }
+  end
+
   def save
-    Hyperion.logger.debug("[RS] Saving a #{self.class.to_s}:") if Hyperion::DEBUG
+    Hyperion.logger.debug("[Hyperion] Saving a #{self.class.to_s}:") if Hyperion::DEBUG
 		
 		rekey
 		
-    Hyperion.logger.debug("[RS] Saving into #{full_key}: #{self.inspect}") if Hyperion::DEBUG
+    Hyperion.logger.debug("[Hyperion] Saving into #{full_key}: #{self.inspect}") if Hyperion::DEBUG
     Hyperion.redis[full_key] = self.serialize
     
     reindex!
   end
 
+	def delete
+		reindex!(:unstore => true)
+		
+	  Rails.logger.debug("[RS] Removingfrom #{full_key}: #{self.inspect}") if RedisStore::DEBUG
+    RedisStore.redis[full_key] = nil
+	end
 
   def initialize(opts = {})
-    defaults = (self.class.class_variable_defined?('@@redis_defaults') ? self.class.class_variable_get('@@redis_defaults') : {})
+    defaults = (self.class.class_variable_defined?('@@attr_defaults') ? self.class.class_variable_get('@@attr_defaults') : {})
 
     defaults.merge(opts).each {|k,v|
       self.send(k.to_s+'=',v)
     }
   end
 
-  def self.deserialize(what); YAML.load(what); end
+  def self.deserialize(what)
+    obj = YAML.load(what)
+    obj.remember_initial_values
+    
+    obj
+  end
   def serialize; YAML::dump(self); end
 
   def self.dump(output = STDOUT, lock = false)

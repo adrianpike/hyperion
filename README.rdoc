@@ -39,13 +39,12 @@ Hyperion is a lightning fast Ruby object model backed with Redis. It was created
 == Requirements
 
 * Ruby 1.9
-* activesupport
+* active_support
 * Redis
 
 == Roadmap
 
-* Change the indexes to use ZSETs.
-* Delete. (ha!)
+* Delete. (har!)
 * Event hooks
 * Schema versioning and migrations.
 * Faster faster faster! Let's utilize more of Redis' exposed data structures to make it better.
@@ -61,8 +60,12 @@ Hyperion is a lightning fast Ruby object model backed with Redis. It was created
 * Add tests for it. This is important so I don't break it in a
   future version unintentionally.
 * Commit, do not mess with rakefile, version, or history.
-  (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
+  (if you want to have your own version, that's grand, but bump version in a commit by itself I can ignore when I pull)
 * Send me a pull request. Bonus points for topic branches.
+
+== Credits & Acknowledgements
+
+Amiel Martin's helped a *ton* with patches and development.
 
 == Copyright
 
