@@ -26,89 +26,113 @@ describe 'Hyperion' do
 		f.key = 'testery'
 		f.save
 		
-		f2 = IndexedObject.first(:other_content => 'zero_cool')
+		f2 = IndexedObject.find2(:first, :conditions => {:other_content => 'zero_cool'})
 		f2.content.should == f.content
 		
 		f3 = IndexedObject.find('testery')
 		f3.content.should == f.content
 	end
 	
-	it "should take objects at instantiation time" do
-		string1 = random_string
-		
-		n=NoKey.new(:content => string1)
-		n.save
-		
-		n2 = NoKey.find(n.id)
-		n2.content.should == string1
-	end
-	
-	it "should autogenerate keys" do
-		string1 = random_string
-		
-		n=NoKey.new
-		n.content = string1
-		n.save
-		
-		n2 = NoKey.find(n.id)
-		n2.content.should == string1
-	end
-	
-	it 'should autoincrement keys whether specified or not' do
-	end
-	
-	it "should be able to index multiple attributes" do
-		string1 = random_string
-		
-		f = IndexedObject.new
-		f.content = string1
-		f.other_content = 'zero_cool'
-		f.key = 'testery'
-		f.save
-		
-		f2 = IndexedObject.first(:other_content => 'zero_cool')
-		f2.content.should == f.content
-		
-		f3 = IndexedObject.find('testery')
-		f3.content.should == f.content
-		
-		f4 = IndexedObject.first(:other_content => 'zero_cool', :content => string1)
-		f4.content.should == f.content
-	end
-	
-	it "shouldn't put an index in for an empty value" do
-		string1 = random_string
-		
-		f = IndexedObject.new
-		f.content = string1
-		f.save
-		
-		f2 = IndexedObject.first(:other_content => nil)
-		f2.should == nil
-	end
-	
-	it "shouldn't matter what order your indexes are specified" do
-	end
-	
-	it "should not have concurrency issues" do
-	end
-
-	it "should reindex objects when I update them" do
-	  
-	  
-	  
-	end
-
-	it "should delete objects and their indexes when i delete them" do
-	end
-	
-	it 'should be OK with key collision' do
-	end
-		
-	it "should die if there's no redis server around" do
-	end
-	
-	it "should allow crazy lengths and contents for both keys and values" do
-	end
+  it "should take objects at instantiation time" do
+    string1 = random_string
+    
+    n=NoKey.new(:content => string1)
+    n.save
+    
+    n2 = NoKey.find(n.id)
+    n2.content.should == string1
+  end
+  
+  it "should autogenerate keys" do
+    string1 = random_string
+    
+    n=NoKey.new
+    n.content = string1
+    n.save
+    
+    n2 = NoKey.find(n.id)
+    n2.content.should == string1
+  end
+  
+  it 'should autoincrement keys whether specified or not' do
+  end
+  
+  it "should be able to index multiple attributes" do
+    string1 = random_string
+    
+    f = IndexedObject.new
+    f.content = string1
+    f.other_content = 'zero_cool'
+    f.key = 'testery'
+    f.save
+    
+    f2 = IndexedObject.first(:other_content => 'zero_cool')
+    f2.content.should == f.content
+    
+    f3 = IndexedObject.find('testery')
+    f3.content.should == f.content
+    
+    f4 = IndexedObject.first(:other_content => 'zero_cool', :content => string1)
+    f4.content.should == f.content
+  end
+  
+  it "shouldn't put an index in for an empty value" do
+    string1 = random_string
+    
+    f = IndexedObject.new
+    f.content = string1
+    f.save
+    
+    f2 = IndexedObject.first(:other_content => nil)
+    f2.should == nil
+  end
+  
+  it "should reindex objects when I update them" do
+    string1 = random_string
+    string2 = random_string
+    
+    f = IndexedObject.new
+    f.content = random_string
+    f.other_content = string1
+    f.save
+    
+      f2 = IndexedObject.first(:other_content => string1)
+      f2.content.should == f.content
+      f2.other_content = string2
+      f2.save
+  
+    f3 = IndexedObject.first(:other_content => string1)
+    f3.should == nil
+    
+    f4 = IndexedObject.first(:other_content => string2)
+    f4.content.should == f.content
+  end
+  
+    it "should delete objects and their indexes when i delete them" do
+      string1 = random_string
+    f = IndexedObject.new
+    f.content = random_string
+    f.other_content = string1
+    f.save
+    
+      f1 = IndexedObject.find(f.key)
+      f1.content.should == f.content
+    
+      f2 = IndexedObject.first(:other_content => string1)
+      f2.content.should == f.content
+      f2.delete
+      
+      f3 = IndexedObject.first(:other_content => string1)
+      f3.should == nil
+  
+      f4 = IndexedObject.find(f.key)
+      f4.should == nil
+    end
+  
+    # it "shouldn't matter what order your indexes are specified"
+    # it "should not have concurrency issues"
+    # it 'should be OK with key collision'
+    # it "should die if there's no redis server around"
+    # it "should allow crazy lengths and contents for both keys and values"
 
 end

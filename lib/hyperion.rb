@@ -19,6 +19,5 @@ class Hyperion
 	extend Logger
 	
   DEBUG = false
-  # TODO: ActiveModel lint
-  # TODO: atomic operations
+  V2_KEYS = true
 end

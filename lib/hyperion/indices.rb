@@ -7,9 +7,12 @@ class Hyperion
 	  # This is so if values get changed, we know the original values so we can go into the indexes and sweep up.
 	  def remember_initial_values
 	    Hyperion.logger.debug("[Hyperion] Remembering initial values on #{self.to_s}!")
-	    @initial_values = self.class.class_variable_get('@@redis_indexes').flatten.uniq.collect{|idx|
-        self.send(idx)
-      } if self.class.class_variable_defined?('@@redis_indexes')
+	    if self.class.class_variable_defined?('@@redis_indexes') then
+  	    @initial_values = {}
+  	    self.class.class_variable_get('@@redis_indexes').flatten.uniq.each{|idx|
+          @initial_values[idx] = self.send(idx)
+        }
+      end
     end
 	  
 	  def index_values_changed?(idx)
@@ -21,39 +24,63 @@ class Hyperion
       else
         (return true) if (@initial_values[idx] != self.send(idx))
       end
+      
+      false
     end
 	  
-		def reindex!(*opts)
+		def reindex!(opts = {})
 		  # Now lets update any indexes
-			
 	    self.class.class_variable_get('@@redis_indexes').each{|idx|
-	      Hyperion.logger.debug("[RS] Updating index for #{idx}") if Hyperion::DEBUG
-
-	      
-	      if index_values_changed?(idx) then
-	        p "COLUMNS CHANGED YO SHITS"
-	      #          if idx.is_a?(Array) then
-	      #            index_values = idx.sort.collect {|i| self.send(i) }.join('.')
-	      #            index_key = self.class.to_s.downcase + '_' + idx.sort.join('.').to_s + '_' + index_values
-	      #          else
-	      #            value = self.send(idx)
-	      #            index_key = self.class.to_s.downcase + '_' + idx.to_s + '_' + value.to_s if value
-	      #          end
-	      #          
-	      #          Rails.logger.debug("[RS] Removing index #{index_key}: #{self.send(self.class.class_variable_get('@@redis_key'))}") if RedisStore::DEBUG
-	      #           RedisStore.redis.srem(index_key, self.send(self.class.class_variable_get('@@redis_key')))
+	      Hyperion.logger.debug("[Hyperion] Updating index for #{idx}")
+  		  
+	      if index_values_changed?(idx) or opts[:unstore] then
+	        Hyperion.logger.debug("[Hyperion] Clearing old index for #{idx}")
+	        
+	        if Hyperion::V2_KEYS then
+    	      if idx.is_a?(Array) then
+    	        index_key = self.class.to_s.downcase + '_' + idx.sort.join('.').to_s
+    	      else
+    					index_key = self.class.to_s.downcase + '_' + idx.to_s
+            end
+            Hyperion.redis.zrem(index_key, self.send(self.class.class_variable_get('@@redis_key')))
+          else
+  	        if idx.is_a?(Array) then
+              index_values = idx.sort.collect {|i| @initial_values[i] }.join('.')
+              index_key = self.class.to_s.downcase + '_' + idx.sort.join('.').to_s + '_' + index_values
+            else
+              value = @initial_values[idx]
+              index_key = self.class.to_s.downcase + '_' + idx.to_s + '_' + value.to_s if value
+            end
+            Hyperion.redis.srem(index_key, self.send(self.class.class_variable_get('@@redis_key')))
+          end
+          Hyperion.logger.debug("[Hyperion] Removed index #{index_key}: #{self.send(self.class.class_variable_get('@@redis_key'))}")
 	      end
 	      
-	      if idx.is_a?(Array) then
-	        index_values = idx.sort.collect {|i| self.send(i) }.join('.')
-	        index_key = self.class.to_s.downcase + '_' + idx.sort.join('.').to_s + '_' + index_values
-	      else
-					value = self.send(idx)
-	        index_key = self.class.to_s.downcase + '_' + idx.to_s + '_' + value.to_s if value
-	      end
-	      Hyperion.logger.debug("[RS] Saving index #{index_key}: #{self.send(self.class.class_variable_get('@@redis_key'))}") if Hyperion::DEBUG
-	      
-	      Hyperion.redis.sadd(index_key, self.send(self.class.class_variable_get('@@redis_key')))
+	      unless opts[:unstore] then
+	        if Hyperion::V2_KEYS then
+    	      if idx.is_a?(Array) then
+    	        value = idx.sort.collect {|i| self.send(i) }.join('.')
+    	        index_key = self.class.to_s.downcase + '_' + idx.sort.join('.').to_s
+    	      else
+    					value = self.send(idx)
+    	        index_key = self.class.to_s.downcase + '_' + idx.to_s
+            end
+            score = Hyperion.score(value)
+            Hyperion.redis.zadd(index_key, score, self.send(self.class.class_variable_get('@@redis_key')))
+    	      Hyperion.logger.debug("[Hyperion] Saving index #{index_key}: #{self.send(self.class.class_variable_get('@@redis_key'))} - #{score}")
+          else # v1 indexes
+    	      if idx.is_a?(Array) then
+    	        value = idx.sort.collect {|i| self.send(i) }.join('.')
+    	        index_key = self.class.to_s.downcase + '_' + idx.sort.join('.').to_s + '_' + value
+    	      else
+    					value = self.send(idx)
+    	        index_key = self.class.to_s.downcase + '_' + idx.to_s + '_' + value.to_s if value
+    	      end
+    	      Hyperion.redis.sadd(index_key, self.send(self.class.class_variable_get('@@redis_key')))
+    	      Hyperion.logger.debug("[Hyperion] Saving index #{index_key}: #{self.send(self.class.class_variable_get('@@redis_key'))}")
+    	    end
+    	    
+  	    end
 	    } if self.class.class_variable_defined?('@@redis_indexes')
 		end
 		
@@ -78,6 +105,8 @@ class Hyperion
 					value
 				when String
 					string_value(value)
+				when nil
+				  nil
 				else
 					if value.respond_to? :zset_score then
 						score value.zset_score # recurse. TODO: limit recursion in case someone returns self or something

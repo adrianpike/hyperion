@@ -4,6 +4,8 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'hyperion'
 
+# TODO: tell the redis store to use a random database
+
 RSpec.configure do |config|
   config.mock_with :rspec
 end
@@ -26,5 +28,5 @@ class IndexedObject < Hyperion
 end
 
 def random_string(length = 10)
-	'asdfdsfasd' # todo lolololol
+	(0...(length-1)).map{65.+(rand(25)).chr}.join # hat tip @kentnl
 end

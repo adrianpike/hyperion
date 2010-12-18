@@ -51,7 +51,11 @@ Hyperion is a lightning fast Ruby object model backed with Redis. It was created
 * Clever auto-sharding based on primary keyspace
   * Figure out a way to auto-balance shards
 * Slow full-table searches.
+* Ordering for queries
 * Partial index searches
+* Atomicity
+* ARel (?)
+* ActiveModel (?)
 
 == Note on Patches/Pull Requests
  

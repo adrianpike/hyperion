@@ -53,11 +53,9 @@ class Hyperion
   end
 
   def save
-    Hyperion.logger.debug("[Hyperion] Saving a #{self.class.to_s}:") if Hyperion::DEBUG
-		
 		rekey
-		
-    Hyperion.logger.debug("[Hyperion] Saving into #{full_key}: #{self.inspect}") if Hyperion::DEBUG
+
+    Hyperion.logger.debug("[Hyperion] Saving into #{full_key}: #{self.inspect}")
     Hyperion.redis[full_key] = self.serialize
     
     reindex!
@@ -66,8 +64,8 @@ class Hyperion
 	def delete
 		reindex!(:unstore => true)
 		
-	  Rails.logger.debug("[RS] Removingfrom #{full_key}: #{self.inspect}") if RedisStore::DEBUG
-    RedisStore.redis[full_key] = nil
+	  Hyperion.logger.debug("[Hyperion] Removing from #{full_key}")
+    Hyperion.redis[full_key] = nil
 	end
 
   def initialize(opts = {})
