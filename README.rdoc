@@ -33,8 +33,8 @@ Hyperion is a lightning fast Ruby object model backed with Redis. It was created
 	p1.save
 	
 	Person.find('adrian@pikeapps.com') #=> #<Person @name="Adrian Pike", @email="adrian@pikeapps.com">
-	Person.find(:name => 'Adrian Pike') #=> [#<Person @name="Adrian Pike", @email="adrian@pikeapps.com">]
-	Person.find(:car_color => 'purple', :state => 'denial') #=> [#<Person @name="Adrian Pike", @email="adrian@pikeapps.com">]
+	Person.find(:all, :conditions => {:name => 'Adrian Pike'}) #=> [#<Person @name="Adrian Pike", @email="adrian@pikeapps.com">]
+	Person.find(:first, :conditions => {:car_color => 'purple', :state => 'denial'}) #=> #<Person @name="Adrian Pike", @email="adrian@pikeapps.com">
 
 == Requirements
 
@@ -44,8 +44,6 @@ Hyperion is a lightning fast Ruby object model backed with Redis. It was created
 
 == Roadmap
 
-* Delete. (har!)
-* Event hooks
 * Schema versioning and migrations.
 * Faster faster faster! Let's utilize more of Redis' exposed data structures to make it better.
 * Clever auto-sharding based on primary keyspace
@@ -53,9 +51,8 @@ Hyperion is a lightning fast Ruby object model backed with Redis. It was created
 * Slow full-table searches.
 * Ordering for queries
 * Partial index searches
-* Atomicity
+* Atomicity & Consistency
 * ARel (?)
-* ActiveModel (?)
 
 == Note on Patches/Pull Requests
  

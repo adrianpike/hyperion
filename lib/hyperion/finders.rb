@@ -8,13 +8,7 @@ class Hyperion
 		
 		# we can do > and < if we use ZRANGEBYSCORE
 		
-		# DEPRECATED
-		def first(conds)
-			# FIXME: gotta be a faster way ;)
-			self.find2(conds).first
-		end
-		
-		def find2(*args)
+		def find(*args)
       options = args.last.is_a?(Hash) ? args.last : {}
       
       if args.first.is_a?(Symbol) then # We're doing something magical.
@@ -37,7 +31,7 @@ class Hyperion
         }
         
         results = object_ids.flatten.uniq.collect {|id|
-          self.find2(id)
+          self.find(id)
         }
 
         # PERFORMANCE: only fetch what's needed
@@ -61,7 +55,7 @@ class Hyperion
 		end
 		
 		# DEPRECATED FINDER
-	  def find(conds)
+	  def legacy_find(conds)
 	    Hyperion.logger.debug("[Hyperion] Searching for #{conds.inspect}")
 
 	    if conds.is_a? Hash then

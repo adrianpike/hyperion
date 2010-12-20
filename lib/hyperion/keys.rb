@@ -17,7 +17,7 @@ class Hyperion
 			end
 
 			unless (self.send(self.class.class_variable_get('@@redis_key'))) then
-	      Hyperion.logger.debug("[RS] Generating new key!") if Hyperion::DEBUG
+	      Hyperion.logger.debug("[Hyperion] Generating new key!") if Hyperion::DEBUG
 	      self.send(self.class.class_variable_get('@@redis_key').to_s + '=', new_key)
 	    end
 		end

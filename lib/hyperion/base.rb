@@ -1,5 +1,5 @@
 class Hyperion
-	
+
 	DEFAULTS = {
 	  :host => '127.0.0.1',
 	  :port => '6379'
@@ -53,11 +53,21 @@ class Hyperion
   end
 
   def save
-		rekey
+    if defined?(:_run_save_callbacks) then
+      _run_save_callbacks do
+  		  save_without_callbacks
+      end
+    else
+      save_without_callbacks
+    end
+  end
+  
+  def save_without_callbacks
+    rekey
 
     Hyperion.logger.debug("[Hyperion] Saving into #{full_key}: #{self.inspect}")
     Hyperion.redis[full_key] = self.serialize
-    
+  
     reindex!
   end
 

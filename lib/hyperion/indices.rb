@@ -65,9 +65,11 @@ class Hyperion
     					value = self.send(idx)
     	        index_key = self.class.to_s.downcase + '_' + idx.to_s
             end
-            score = Hyperion.score(value)
-            Hyperion.redis.zadd(index_key, score, self.send(self.class.class_variable_get('@@redis_key')))
-    	      Hyperion.logger.debug("[Hyperion] Saving index #{index_key}: #{self.send(self.class.class_variable_get('@@redis_key'))} - #{score}")
+            if value then
+              score = Hyperion.score(value)
+              Hyperion.redis.zadd(index_key, score, self.send(self.class.class_variable_get('@@redis_key')))
+    	        Hyperion.logger.debug("[Hyperion] Saving index #{index_key}: #{self.send(self.class.class_variable_get('@@redis_key'))} - #{score}")
+    	      end
           else # v1 indexes
     	      if idx.is_a?(Array) then
     	        value = idx.sort.collect {|i| self.send(i) }.join('.')

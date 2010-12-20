@@ -1,0 +1,16 @@
+= 0.2.0 =
+
+_We're not here yet, I'm still workin on it! :]_
+
+Lots of things were revised for this version, specifically around indexing and finding. 
+*The old .find style of finders is no more* - where before you would have used Object.find(:cond_1 => 'foo', :cond_2 => 'bar'), now you have to use Object.find(:all, :conditions => {:cond_1 => 'foo', :cond_2 => 'bar'}). There's also lots more stuff around ordering and limiting your sorts, and you can do greater than and less then matching for queries. Check out finders.rb for the full scoop.
+The database is now incompatible, and has a method for checking database compatibility. Look for a migration tool shortly.
+
+ * New finders, for partial matches, ordering, and result set limiting.
+ * Indexes now use zsets.
+ * ActiveModel::Validations and ActiveModel::Callbacks are now used if ActiveModel is around.
+ * DB versioning stub
+
+= 0.1.0 =
+
+Initial extraction from Leatherbound.me
