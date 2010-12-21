@@ -53,6 +53,9 @@ If you run into a bug, feel free to add an issue in the GitHub issue tracker.
 == Roadmap/TODO
 
 === 0.2.0
+* New finders for range searches
+* Migrate indices to ZSETs
+* Validations & Callbacks
 * Schema versioning and migrations.
 
 === 0.3.0
