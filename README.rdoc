@@ -43,17 +43,31 @@ Hyperion is a lightning fast Ruby object model backed with Redis. It was created
 * Redis
 * active_model if you want to use validations and callbacks.
 
-== Roadmap
+== Issues
+This is most certainly still beta software - most of the stuff under the hood is in active use, but I'm
+the only one living on the edge gem right now. I'd love to see some other people using it and giving me
+some feedback if it helps them, and feedback if it doesn't.
 
+If you run into a bug, feel free to add an issue in the GitHub issue tracker.
+
+== Roadmap/TODO
+
+=== 0.2.0
 * Schema versioning and migrations.
-* Faster faster faster! Let's utilize more of Redis' exposed data structures to make it better.
+
+=== 0.3.0
 * Clever auto-sharding based on primary keyspace
   * Figure out a way to auto-balance shards
+
+=== 0.4.0
 * Slow full-table searches.
 * Ordering for queries
-* Partial index searches
-* Atomicity & Consistency
-* Migrate to ARel!
+
+=== 0.5.0
+* Faster faster faster! Let's utilize more of Redis' exposed data structures to make it better.
+
+=== 1.0
+* Migrate to ARel.
 
 == Note on Patches/Pull Requests
  
