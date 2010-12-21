@@ -4,10 +4,10 @@ Hyperion is a lightning fast Ruby object model backed with Redis. It was created
 
 == Key features
 
-* CRUD on Ruby classes, any attributes get stuffed into a Redis key.
+* Object -> Redis mapper, with indexes, validations, callbacks, and other magic.
 * Indexing of objects on any attributes or collections of attributes.
 
-== A quickie
+== A token example
 	
 	adrian$ gem install hyperion
 	
@@ -15,7 +15,7 @@ Hyperion is a lightning fast Ruby object model backed with Redis. It was created
 	
 	class Person < Hyperion
 		# First we set up the attributes on this object.
-		attr_accessor :name, :email, :password, :other_amazing_info, :car_color, :state
+		attribute :name, :email, :password, :other_amazing_info, :car_color, :state
 		
 		# Let's use the email as our primary key.
 		# Another option would be to not define our own, in which case :id will be created & used.
@@ -41,6 +41,7 @@ Hyperion is a lightning fast Ruby object model backed with Redis. It was created
 * Ruby 1.9
 * active_support
 * Redis
+* active_model if you want to use validations and callbacks.
 
 == Roadmap
 
@@ -52,7 +53,7 @@ Hyperion is a lightning fast Ruby object model backed with Redis. It was created
 * Ordering for queries
 * Partial index searches
 * Atomicity & Consistency
-* ARel (?)
+* Migrate to ARel!
 
 == Note on Patches/Pull Requests
  
@@ -64,8 +65,12 @@ Hyperion is a lightning fast Ruby object model backed with Redis. It was created
   (if you want to have your own version, that's grand, but bump version in a commit by itself I can ignore when I pull)
 * Send me a pull request. Bonus points for topic branches.
 
+== Warranty
+This software is provided "as is" and without any express or implied warranties, including, without limitation, the implied warranties of merchantibility and fitness for a particular purpose.
+
 == Credits & Acknowledgements
 
+I'm Adrian Pike (@adrianpike).
 Amiel Martin's helped a *ton* with patches and development.
 
 == Copyright

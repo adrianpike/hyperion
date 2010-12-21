@@ -5,8 +5,14 @@ class Hyperion
 	  :port => '6379'
 	}
 	
+	# All hyperion Exceptions get wrapped under this beauty. You'll see such fine exceptions as:
+	# - NoIndex - You tried to query an attribute that isn't indexed.
+	# - ConnectionRefused - Hyperion wasn't able to connect to your Redis backend.
+	# - UnindexableValue - You're like, uh, trying to index a tomato or something. 
+	#   I'm not sure what kind of hueristic we should use for Tomato indexing, but by golly go take a looksee at Indices#121, and you can make your own hueristic!
   class HyperionException < Exception; end
-  class NoKey < HyperionException; end
+  class ConnectionRefused < HyperionException #:nodoc:
+  end
 	
   def self.hyperion_defaults(defaults) # DEPRECATED
     attribute_defaults(defaults)
@@ -33,7 +39,7 @@ class Hyperion
   			end
 			rescue Errno::ECONNREFUSED => e
 			  Hyperion.logger.error("Hyperion wasn't able to connect to your Redis server on #{config(:host)}:#{config(:port)}.")
-        raise e
+        raise ConnectionRefused
 			end
 		end
 		@@redis
@@ -62,7 +68,7 @@ class Hyperion
     end
   end
   
-  def save_without_callbacks
+  def save_without_callbacks #:nodoc:
     rekey
 
     Hyperion.logger.debug("[Hyperion] Saving into #{full_key}: #{self.inspect}")

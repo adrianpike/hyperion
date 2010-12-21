@@ -1,9 +1,9 @@
 require 'logger'
 
 class Hyperion
-	module Logger
+	module Logger #:nodoc:
 		
-		def logger
+		def logger #:nodoc:
 			unless class_variable_defined?('@@logger') then
 				@@logger = ::Logger.new(STDOUT)
 				@@logger.level = ::Logger::DEBUG

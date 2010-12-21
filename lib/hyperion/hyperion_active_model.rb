@@ -1,7 +1,7 @@
 # TODO: make all of this junk useful :)
 
 class Hyperion
-  module HyperionActiveModel
+  module HyperionActiveModel #:nodoc:
     
     
     def to_model
@@ -37,7 +37,7 @@ class Hyperion
       where.define_model_callbacks :save, :delete
     end
     
-    module ClassMethods
+    module ClassMethods #:nodoc:
       def model_name
         ActiveModel::Name.new(self)
       end

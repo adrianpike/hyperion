@@ -15,7 +15,11 @@ require 'hyperion/finders'
 
 require 'hyperion/hyperion_active_model'
 
-class Hyperion
+class Hyperion #:nodoc:
+  # = Hyperion
+  # 
+
+  
 	include Keys
 	include Indices
   include HyperionActiveModel

@@ -1,5 +1,5 @@
 class Hyperion
-	module Version
+	module Version #:nodoc:
 		
 		def branch; nil; end
 		def major; 0;	end

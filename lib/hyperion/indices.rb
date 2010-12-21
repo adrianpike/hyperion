@@ -1,11 +1,13 @@
 class Hyperion
 	module Indices
 		
-		class NoIndex < HyperionException; end
-	  class UnindexableValue < HyperionException; end
+		class NoIndex < HyperionException #:nodoc:
+		end
+	  class UnindexableValue < HyperionException #:nodoc:
+	  end
 	  
 	  # This is so if values get changed, we know the original values so we can go into the indexes and sweep up.
-	  def remember_initial_values
+	  def remember_initial_values #:nodoc:
 	    Hyperion.logger.debug("[Hyperion] Remembering initial values on #{self.to_s}!")
 	    if self.class.class_variable_defined?('@@redis_indexes') then
   	    @initial_values = {}
@@ -15,7 +17,7 @@ class Hyperion
       end
     end
 	  
-	  def index_values_changed?(idx)
+	  def index_values_changed?(idx) #:nodoc:
 	    return false unless @initial_values
 	    if idx.is_a?(Array) then
 	      idx.each {|i|
@@ -28,6 +30,7 @@ class Hyperion
       false
     end
 	  
+	  # Force a reindex. opts can include :unstore, in which case it will just remove indices, and not add new ones.
 		def reindex!(opts = {})
 		  # Now lets update any indexes
 	    self.class.class_variable_get('@@redis_indexes').each{|idx|
@@ -86,10 +89,19 @@ class Hyperion
 	    } if self.class.class_variable_defined?('@@redis_indexes')
 		end
 		
-		def self.included(where); where.extend ClassMethods; end
+		def self.included(where) #:nodoc:
+		   where.extend ClassMethods
+		end
 		
 		module ClassMethods
 
+      # Define an indexed attribute on a Hyperion model.
+      #   class Foo < Hyperion
+      #     attribute :number_of_awesomeness
+      #     hyperion_index :number_of_awesomeness
+      #   end
+      # Now, any time a Foo is created/modified/updated, an index will be updated for the number_of_awesomeness attribute, 
+      # and so you'll be able to query based upon number_of_awesomeness.
 			def hyperion_index(index)
 		    if class_variable_defined?(:@@redis_indexes) then
 		      class_variable_set(:@@redis_indexes, class_variable_get(:@@redis_indexes) << index)
@@ -98,9 +110,12 @@ class Hyperion
 		    end
 		  end
 		
-			# Indexes need to be sorted sets!
-			# ZSET scores can supposedly be large floats - I need to explore max ZSET score size.
+			# TODO: Explore max ZSET score size.
 		
+		  # Score is pretty much magic. It converts your index values into floats, suitable for Redis' ZSETs.
+		  # Now here's where it gets fun - if you give Hyperion something other than a Float,Fixnum,Bignum, or String,
+		  # it's awful tough for Hyperion to know how to crush that into a suitable ZSET value, so all you do is specify a
+		  # zset_score method on that object, and Hyperion will use that.
 			def score(value)
 				case value
 				when Float,Fixnum,Bignum
@@ -120,7 +135,7 @@ class Hyperion
 		
 			private
 				# Give me a float-representation of a string
-				def string_value(string)
+				def string_value(string) #:nodoc:
 					vals = []
 					string.upcase.each_byte{|c|
 						if (c>="0".ord and c<="9".ord) then

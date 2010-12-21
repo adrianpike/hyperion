@@ -1,13 +1,27 @@
 class Hyperion
 	module Finders
+    # == Hyperion Finders
+    #
+    # The finder methods look strikingly similar to ActiveRecord's. This isn't really a coincidence. :)
 
-		# find(id)
-		# find(:all, {})
-		# find(:first, {})
-		# find(:last, {})
-		
-		# we can do > and < if we use ZRANGEBYSCORE
-		
+    
+    # If you're just wanting to fetch an object by its key, include just the key as the only argument.
+    #
+    # If you'd like to fetch a collection of results, or using a more complicated set of conditions, the first argument should be one of 
+    # :all, :first, or :last.
+    # 
+    # == Parameters
+    # - :conditions - Either an Array, in which case it will fetch results that match any of the items,
+    # a Hash with a :min and a :max key, in which case it will fetch results between two items (inclusive),
+    # or a String, in which case it will fetch all items that match the string.
+    # - :order - not built yet!
+    # - :limit - also, not built yet.
+    #
+    # == Examples
+		#   find(5)
+		#   find(:all, :conditions => {:indexed_item => ['1','2','3']})
+		#   find(:first, :conditions => {:indexed_item => '31337'})
+		#   find(:last, :conditions => {:indexed_item => {:min => 12, :max => 50}})
 		def find(*args)
       options = args.last.is_a?(Hash) ? args.last : {}
       
@@ -21,7 +35,7 @@ class Hyperion
           case conditions
           when Hash
             # raise an exception if we don't have min & max
-            object_ids << redis.zrangebyscore(self.to_s.downcase+'_'+key.to_s, conditions[:min], conditions[:max])
+            object_ids << redis.zrangebyscore(self.to_s.downcase+'_'+key.to_s, Hyperion.score(conditions[:min]), Hyperion.score(conditions[:max]))
           when Array
             # OR this junk together to build our query
           else
@@ -55,7 +69,7 @@ class Hyperion
 		end
 		
 		# DEPRECATED FINDER
-	  def legacy_find(conds)
+	  def legacy_find(conds) #:nodoc:
 	    Hyperion.logger.debug("[Hyperion] Searching for #{conds.inspect}")
 
 	    if conds.is_a? Hash then
