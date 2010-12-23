@@ -14,5 +14,7 @@ class Hyperion
 			true # I haven't broken it yet.
 		end
 		
+		# TODO: store the version and the DB config (including shard strategy) within the Redis store
+		
 	end
 end
