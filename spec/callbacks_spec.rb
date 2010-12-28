@@ -1,5 +1,4 @@
 require 'spec_helper'
-# TODO: truncate the redis store and/or stub it beforehand
 
 class FiredCallback < Exception; end
 

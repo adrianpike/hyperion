@@ -1,8 +1,7 @@
-# TODO: make all of this junk useful :)
+# TODO: Actually do valids/new_record/etc.
 
 class Hyperion
   module HyperionActiveModel #:nodoc:
-    
     
     def to_model
       self

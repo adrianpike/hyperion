@@ -1,7 +1,7 @@
 require 'spec_helper'
-# TODO: truncate the redis store and/or stub it beforehand
 
 describe 'Hyperion' do
+  
   it "should work for basic set/fetch" do
       string1 = random_string
     
@@ -129,10 +129,17 @@ describe 'Hyperion' do
             f4.should == nil
           end
         
-        #   # it "shouldn't matter what order your indexes are specified"
-        #   # it "should not have concurrency issues"
-        #   # it 'should be OK with key collision'
-        #   # it "should die if there's no redis server around"
-        #   # it "should allow crazy lengths and contents for both keys and values"
-    
+    it "should set up an attribute for the key if not specified"
+    it "should make a key if not specified"
+    it "should yell at you if you query on an unindexed attribute"
+    it "should keep metadata per Object around whats indexed versus not"
+    it "should be able to reindex Objects"
+    it "should be safely concurrent during a reindex"
+    it "shouldn't matter what order your indexes are specified"
+    it "should not have concurrency issues"
+    it 'should be OK with key collision'
+    it "should die if there's no redis server around"
+    it "should allow crazy lengths and contents for both keys and values"
+    it 'should be able to use namespaces' 
+    it 'should return sane results when I combine two indexes that arent specified as a compound index'
 end

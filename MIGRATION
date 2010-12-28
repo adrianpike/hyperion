@@ -1,0 +1,8 @@
+== Some words on Hyperion Migration ==
+
+Occasionally we'll have to re-architect some of the ways that Hyperion stores data, keys, or indices. This will sometimes make your existing database incompatible with new versions of Hyperion. While in the long-term, we plan on making the migration a seamless experience, for now we'll try to document the low-level changes here, as well as how to manually migrate your database(s).
+
+== 0.1.* -> 0.2.* ==
+
+Indexes were changed from SETs to ZSETs so we could do range queries. All tables will require a reindexing.
+Foo.reindex! should do the trick. (untested as of this writing, can some others verify on a backup?)

@@ -30,17 +30,21 @@ class Hyperion
         object_ids = []
         
         conds.each {|key,conditions|
-          # TODO: raise an exception if this key isn't indexed
-
-          case conditions
-          when Hash
-            # raise an exception if we don't have min & max
-            object_ids << redis.zrangebyscore(self.to_s.downcase+'_'+key.to_s, Hyperion.score(conditions[:min]), Hyperion.score(conditions[:max]))
-          when Array
-            # OR this junk together to build our query
+          if (key==self.class_variable_get('@@redis_key')) then
+            object_ids << [conditions.to_s]
           else
-            object_ids << redis.zrangebyscore(self.to_s.downcase+'_'+key.to_s, Hyperion.score(conditions), Hyperion.score(conditions))
-            # just do a straight query
+            # TODO: raise an exception if this key isn't indexed
+            case conditions
+            when Hash
+              # raise an exception if we don't have min & max
+              object_ids << redis.zrangebyscore(self.to_s.downcase+'_'+key.to_s, Hyperion.score(conditions[:min]), Hyperion.score(conditions[:max]))
+            when Array
+              # OR this junk together to build our query
+              # TODO: Actually do this.
+            else
+              object_ids << redis.zrangebyscore(self.to_s.downcase+'_'+key.to_s, Hyperion.score(conditions), Hyperion.score(conditions))
+              # just do a straight query
+            end
           end
         }
         
@@ -48,6 +52,8 @@ class Hyperion
           self.find(id)
         }
 
+        # TODO: Limits
+        
         # PERFORMANCE: only fetch what's needed
         case args.first
           when :last
@@ -68,8 +74,7 @@ class Hyperion
 			end
 		end
 		
-		# DEPRECATED FINDER
-	  def legacy_find(conds) #:nodoc:
+		def legacy_find(conds) #:nodoc:
 	    Hyperion.logger.debug("[Hyperion] Searching for #{conds.inspect}")
 
 	    if conds.is_a? Hash then
@@ -104,7 +109,6 @@ class Hyperion
 	      end
 	    end
 	  end
-		
 		
 	end
 end

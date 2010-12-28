@@ -126,7 +126,7 @@ class Hyperion
 				  nil
 				else
 					if value.respond_to? :zset_score then
-						score value.zset_score # recurse. TODO: limit recursion in case someone returns self or something
+						score value.zset_score # TODO: limit recursion
 					else
 						raise UnindexableValue
 					end

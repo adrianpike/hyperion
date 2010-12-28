@@ -14,38 +14,46 @@ class Hyperion
   class ConnectionRefused < HyperionException #:nodoc:
   end
 	
-  def self.hyperion_defaults(defaults) # DEPRECATED
+  def self.hyperion_defaults(defaults)
     attribute_defaults(defaults)
   end
   def self.attribute_defaults(defaults)
     class_variable_set(:@@attr_defaults, defaults)
   end
   
-  # TODO: It would be nice to refactor this
+  # TODO: refactor Hyperion's config - investigate AR
   def self.config(attrib)
     DEFAULTS[attrib]
   end
   
-  def self.redis
+  def self.redis(fetch_config = true)
     unless class_variable_defined?('@@redis') then
 			begin
 			  @@redis = Redis.new(:host => config(:host), :port => config(:port))
-			
-  			old_version = @@redis['hyperion_version']
-  			if old_version then
-  				Hyperion.logger.error("Hyperion datastore version is INCOMPATIBLE with your current hyperion gem. We'll still continue, but beware...") unless version_compatible?(old_version)
-  			else
-  				@@redis['hyperion_version'] = version
-  			end
 			rescue Errno::ECONNREFUSED => e
 			  Hyperion.logger.error("Hyperion wasn't able to connect to your Redis server on #{config(:host)}:#{config(:port)}.")
         raise ConnectionRefused
 			end
 		end
+		if fetch_config and not class_variable_defined?('@@db_config') then
+		  @@db_config = load_db_config
+		end
+	  
 		@@redis
   end
+  
+  def self.load_db_config
+    old_version = @@redis['hyperion_version']
+	  Hyperion.logger.error("Hyperion datastore version #{old_version} is INCOMPATIBLE with your current hyperion gem. We'll still continue, but beware that things might not work right! Read MIGRATION for more info.") if old_version==nil or not version_compatible?(old_version)
+	  unless old_version then
+		  @@redis['hyperion_version'] = version
+	  end
+	  
+	  {
+	    :version => version
+	  }
+  end
 
-  # :[ DEPRECATED, getting yanked as soon as possible
   def self.attr_accessor(*args)
     attribute(*args)
   end

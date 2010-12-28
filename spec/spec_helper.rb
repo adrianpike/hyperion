@@ -4,10 +4,22 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'hyperion'
 
-# TODO: tell the redis store to use a random database
-
 RSpec.configure do |config|
   config.mock_with :rspec
+  
+  # Find us an empty database to play in, because we'll be blowing it away nastily
+  config.before(:all) {
+    (0..15).each {|i|
+      Hyperion.redis(false).select(i)
+      break if (Hyperion.redis(false).dbsize==0)
+    }
+  }
+  config.before(:each) {
+    Hyperion.redis(false).flushdb
+  }
+  config.after(:all) {
+    Hyperion.redis(false).flushdb
+  }
 end
 
 class DefaultKey < Hyperion

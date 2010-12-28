@@ -2,10 +2,10 @@ require 'active_support'
 require 'yaml'
 require 'redis'
 
-# TODO: rescue this
 require 'active_model'
 
-# TODO: splat this
+Dir["hyperion/*"].each {|file| require file }
+
 require 'hyperion/base'
 require 'hyperion/indices'
 require 'hyperion/keys'
@@ -30,4 +30,11 @@ class Hyperion #:nodoc:
 	
   DEBUG = false
   V2_KEYS = true
+  
+ 
+ # FIXME 
+#  ActiveSupport::Deprecation.deprecate_methods(Hyperion.class,:attr_accessor)
+#  ActiveSupport::Deprecation.deprecate_methods(Hyperion,:hyperion_defaults)
+#  ActiveSupport::Deprecation.deprecate_methods(Hyperion,:legacy_find)
+  
 end
