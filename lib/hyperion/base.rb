@@ -74,6 +74,8 @@ class Hyperion
     else
       save_without_callbacks
     end
+    
+    @persisted = true
   end
   
   def save_without_callbacks #:nodoc:
@@ -90,6 +92,8 @@ class Hyperion
 		
 	  Hyperion.logger.debug("[Hyperion] Removing from #{full_key}")
     Hyperion.redis[full_key] = nil
+    
+    @destroyed = true
 	end
 
   def initialize(opts = {})

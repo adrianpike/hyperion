@@ -1,5 +1,3 @@
-# TODO: Actually do valids/new_record/etc.
-
 class Hyperion
   module HyperionActiveModel #:nodoc:
     
@@ -12,16 +10,25 @@ class Hyperion
     end
     
     def errors
+      # TODO
       obj = Object.new
-      def obj.[](key)         [] end
+      def obj.[](key) end
       def obj.full_messages() [] end
       obj
     end
     
-    def valid?()      true end
-    def new_record?() true end
-    def destroyed?()  true end
-    def persisted?() true end
+    def valid?
+      # TODO
+    end
+    def new_record?
+      @initial_values == nil
+    end
+    def destroyed?
+      @destroyed == true
+    end
+    def persisted?
+      @persisted == true
+    end
 
     def to_param
       self.to_key if self.persisted?
